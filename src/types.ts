@@ -20,10 +20,10 @@ export interface Contestant {
 export interface Look {
   caption: string;
   image_url: string;
-  series: Series;
+  appearance: Appearance;
 }
 
-export interface Series {
+export interface Appearance {
   show: string;
   season: number;
 }
