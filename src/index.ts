@@ -5,23 +5,23 @@ import { processQueens } from "./scrape/scrapeQueens";
 
 const BASE_FANDOM_URL = "https://rupaulsdragrace.fandom.com";
 
+const SHOWS_TO_PROCESS = [
+  {
+    name: "RuPaul's Drag Race",
+    numSeasons: 17,
+  },
+];
+
 async function main() {
-  const SHOWS_TO_PROCESS = [
-    {
-      name: "RuPaul's Drag Race",
-      numSeasons: 17,
-    },
-  ];
-
   console.log(`# of shows to process: ${SHOWS_TO_PROCESS.length}`);
-  console.log(
-    `# of seasons to process: ${_.sumBy(SHOWS_TO_PROCESS, "numSeasons")}\n`
-  );
 
+  const totalSeasons = _.sumBy(SHOWS_TO_PROCESS, "numSeasons");
+
+  console.log(`# of seasons to process: ${totalSeasons}\n`);
   const seasons: Season[] = [];
   await Promise.all(
-    _.chunk(SHOWS_TO_PROCESS, 5).map(async (batch) => {
-      const batchResults = await processShows(BASE_FANDOM_URL, batch);
+    _.chunk(SHOWS_TO_PROCESS, 5).map(async (shows) => {
+      const batchResults = await processShows(BASE_FANDOM_URL, shows);
       seasons.push(...batchResults);
     })
   );
@@ -34,8 +34,8 @@ async function main() {
   console.log(`\n# of queens to process: ${uniqueQueens.length}\n`);
   const queens: Queen[] = [];
   await Promise.all(
-    _.chunk(uniqueQueens, 50).map(async (batch) => {
-      const batchResults = await processQueens(batch);
+    _.chunk(uniqueQueens, 50).map(async (qs) => {
+      const batchResults = await processQueens(qs);
       queens.push(...batchResults);
     })
   );
