@@ -1,9 +1,9 @@
-import type { Contestant, Look, SeasonContestant } from "../types";
+import type { Contestant, Look, Series } from "../types";
 import { fetchWithRetry } from "../utils";
 import * as cheerio from "cheerio";
 
 export async function batchProcessContestants(
-  contestants: SeasonContestant[]
+  contestants: Series["contestants"]
 ): Promise<Contestant[]> {
   return Promise.all(
     contestants.map(async (c): Promise<Contestant> => {
@@ -52,7 +52,7 @@ async function extractContestantDetails(
         allLooks.push({
           caption: caption.replace(/&quot;/g, '"').replace(/&#39;/g, "'"),
           image_url: fullSizeImg,
-          appearance: {
+          series: {
             show: showName,
             season: seasonNum ?? -1,
           },

@@ -1,4 +1,4 @@
-import type { Season, SeasonContestant } from "../types";
+import type { Series } from "../types";
 import { fetchWithRetry } from "../utils";
 import * as cheerio from "cheerio";
 
@@ -6,7 +6,7 @@ export async function processSeason(
   baseUrl: string,
   showName: string,
   season: number
-): Promise<Season> {
+): Promise<Series> {
   console.log(`Processing Season ${season}...`);
 
   const seasonUrl = `${baseUrl}/wiki/${showName.replace(
@@ -23,7 +23,7 @@ export async function processSeason(
   // Resolve final profile URL to address any name changes
   // For e.g, a contestant may be named "Bob" in S1, but on S2 they are named "Robert".
   // Visiting their latest profile page should always show their latest name.
-  const finalContestantsData: SeasonContestant[] = await Promise.all(
+  const finalContestantsData: Series["contestants"] = await Promise.all(
     initialContestantsData.map(async (contestant) => {
       const response = await fetchWithRetry(contestant.profileLink);
       return {
@@ -38,6 +38,7 @@ export async function processSeason(
   );
 
   return {
+    show: showName,
     season,
     year: premiereYear,
     contestants: finalContestantsData,
@@ -55,8 +56,8 @@ function extractPremiereYear($seasonPage: cheerio.CheerioAPI): number {
 function extractContestants(
   $seasonPage: cheerio.CheerioAPI,
   baseUrl: string // used to construct links relative to root domain
-): SeasonContestant[] {
-  const contestants: SeasonContestant[] = [];
+): Series["contestants"] {
+  const contestants: Series["contestants"] = [];
   $seasonPage("table").each((_, table) => {
     const hasRankHeader = $seasonPage(table).find("th").text().includes("Rank");
 
