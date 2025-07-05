@@ -3,7 +3,24 @@ import { fetchWithRetry } from "../utils";
 import * as cheerio from "cheerio";
 import _ from "lodash";
 
-export async function processShow(
+export async function processShows(
+  baseUrl: string,
+  shows: { name: string; numSeasons: number }[]
+): Promise<Season[]> {
+  const seasons: Season[] = [];
+  for (const show of shows) {
+    const showSeasons = await processShow(baseUrl, show);
+    seasons.push(...showSeasons);
+  }
+  seasons.forEach((s) => {
+    console.log(
+      `${s.show} Season ${s.season}: ${s.contestants.length} contestants found`
+    );
+  });
+  return seasons;
+}
+
+async function processShow(
   baseUrl: string,
   show: {
     name: string;

@@ -1,6 +1,6 @@
 import _ from "lodash";
 import type { Queen, Season } from "./types";
-import { processShow } from "./scrape/scrapeShow";
+import { processShows } from "./scrape/scrapeShow";
 import { processQueens } from "./scrape/scrapeQueens";
 
 const BASE_FANDOM_URL = "https://rupaulsdragrace.fandom.com";
@@ -21,15 +21,8 @@ async function main() {
   const seasons: Season[] = [];
   await Promise.all(
     _.chunk(SHOWS_TO_PROCESS, 5).map(async (batch) => {
-      for (const show of batch) {
-        const showSeasons = await processShow(BASE_FANDOM_URL, show);
-        showSeasons.forEach((s) => {
-          console.log(
-            `${show.name} Season ${s.season}: ${s.contestants.length} contestants found`
-          );
-        });
-        seasons.push(...showSeasons);
-      }
+      const batchResults = await processShows(BASE_FANDOM_URL, batch);
+      seasons.push(...batchResults);
     })
   );
 
