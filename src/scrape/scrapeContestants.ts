@@ -1,0 +1,61 @@
+import type { Contestant, Look, SeasonContestant } from "../types";
+import { fetchWithRetry } from "../utils";
+import * as cheerio from "cheerio";
+
+export async function batchProcessContestants(
+  contestants: SeasonContestant[]
+): Promise<Contestant[]> {
+  return Promise.all(
+    contestants.map(async (c): Promise<Contestant> => {
+      const response = await fetchWithRetry(c.profileLink ?? "");
+      const $contestantPage = cheerio.load(await response.text());
+      const details = await extractContestantDetails($contestantPage);
+      return {
+        id: crypto.randomUUID(),
+        name: c.name,
+        profileLink: c.profileLink,
+        looks: details.looks,
+      };
+    })
+  );
+}
+
+/**
+ * This will grab ALL looks across ALL shows and seasons.
+ * Consumers of this data should do the filtering.
+ */
+async function extractContestantDetails(
+  $contestantPage: cheerio.CheerioAPI
+): Promise<{ looks: Look[] }> {
+  const allLooks: Look[] = [];
+
+  // For some reason the "Looks" heading could be an h3 or h4, so we need to check both..
+  $contestantPage("h3, h4").each((_, heading) => {
+    const headingText = $contestantPage(heading).text();
+    if (!headingText.includes("Looks")) return;
+
+    const seasonMatch = headingText.match(/Season (\d+) Looks/);
+    const seasonNum = seasonMatch ? parseInt(seasonMatch[1] ?? "", 10) : null;
+    const showName = headingText.slice(0, headingText.indexOf(" Season"));
+
+    const gallery = $contestantPage(heading).next(".wikia-gallery");
+    gallery.find(".wikia-gallery-item").each((_, item) => {
+      const imgEl = $contestantPage(item).find("img");
+      const captionEl = $contestantPage(item).find(".lightbox-caption");
+
+      const imgUrl = imgEl.attr("data-src") || imgEl.attr("src");
+      const caption = captionEl.text().trim() || imgEl.attr("alt") || "";
+
+      if (imgUrl && caption && imgUrl.includes("static.wikia.nocookie.net")) {
+        allLooks.push({
+          caption: caption.replace(/&quot;/g, '"').replace(/&#39;/g, "'"),
+          image_url: imgUrl,
+          show: showName,
+          season: seasonNum ?? -1,
+        });
+      }
+    });
+  });
+
+  return { looks: allLooks };
+}

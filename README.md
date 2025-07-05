@@ -1,1 +1,5 @@
 # drex-scraper
+
+```
+bun scrape
+```
