@@ -1,15 +1,15 @@
-import type { Contestant, Look, Series } from "../types";
+import type { Queen, Look, Contestant } from "../types";
 import { fetchWithRetry } from "../utils";
 import * as cheerio from "cheerio";
 
-export async function batchProcessContestants(
-  contestants: Series["contestants"]
-): Promise<Contestant[]> {
+export async function processQueens(
+  contestants: Contestant[]
+): Promise<Queen[]> {
   return Promise.all(
-    contestants.map(async (c): Promise<Contestant> => {
+    contestants.map(async (c): Promise<Queen> => {
       const response = await fetchWithRetry(c.profileLink ?? "");
       const $contestantPage = cheerio.load(await response.text());
-      const details = await extractContestantDetails($contestantPage);
+      const details = await extractQueenDetails($contestantPage);
       return {
         id: crypto.randomUUID(),
         name: c.name,
@@ -24,7 +24,7 @@ export async function batchProcessContestants(
  * This will grab ALL looks across ALL shows and seasons.
  * Consumers of this data should do the filtering.
  */
-async function extractContestantDetails(
+async function extractQueenDetails(
   $contestantPage: cheerio.CheerioAPI
 ): Promise<{ looks: Look[] }> {
   const allLooks: Look[] = [];

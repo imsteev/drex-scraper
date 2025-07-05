@@ -1,4 +1,4 @@
-import type { Series } from "../types";
+import type { Contestant, Series } from "../types";
 import { fetchWithRetry } from "../utils";
 import * as cheerio from "cheerio";
 
@@ -56,8 +56,8 @@ function extractPremiereYear($seasonPage: cheerio.CheerioAPI): number {
 function extractContestants(
   $seasonPage: cheerio.CheerioAPI,
   baseUrl: string // used to construct links relative to root domain
-): Series["contestants"] {
-  const contestants: Series["contestants"] = [];
+): Contestant[] {
+  const contestants: Contestant[] = [];
   $seasonPage("table").each((_, table) => {
     const hasRankHeader = $seasonPage(table).find("th").text().includes("Rank");
 

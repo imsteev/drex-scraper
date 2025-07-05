@@ -2,10 +2,15 @@ export interface Series {
   show: string;
   season: number;
   year: number;
-  contestants: Pick<Contestant, "name" | "profileLink">[];
+  contestants: Contestant[];
 }
 
 export interface Contestant {
+  name: string;
+  profileLink: string;
+}
+
+export interface Queen {
   id: string;
   profileLink: string;
   name: string;

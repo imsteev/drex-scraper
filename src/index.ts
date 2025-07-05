@@ -1,7 +1,7 @@
 import _ from "lodash";
-import type { Contestant } from "./types";
+import type { Queen } from "./types";
 import { processSeason } from "./scrape/scrapeSeasons";
-import { batchProcessContestants } from "./scrape/scrapeContestants";
+import { processQueens } from "./scrape/scrapeQueens";
 
 const BASE_FANDOM_URL = "https://rupaulsdragrace.fandom.com";
 const SHOW_NAME = "RuPaul's Drag Race";
@@ -13,26 +13,23 @@ async function main() {
       processSeason(BASE_FANDOM_URL, SHOW_NAME, i + 1)
     )
   );
-  const uniqueContestants = _.uniqBy(
+  const uniqueQueens = _.uniqBy(
     seasons.flatMap((s) => s.contestants),
     "name"
   );
 
-  const contestantDetails: Contestant[] = [];
-  for (const batch of _.chunk(uniqueContestants, 50)) {
-    const batchResults = await batchProcessContestants(batch);
-    contestantDetails.push(...batchResults);
+  const queens: Queen[] = [];
+  for (const batch of _.chunk(uniqueQueens, 50)) {
+    const batchResults = await processQueens(batch);
+    queens.push(...batchResults);
   }
 
-  contestantDetails.sort((a, b) => a.name.localeCompare(b.name));
+  queens.sort((a, b) => a.name.localeCompare(b.name));
 
-  await Bun.write(
-    "rpdr_contestants.json",
-    JSON.stringify(contestantDetails, null, 2)
-  );
+  await Bun.write("rpdr_queens.json", JSON.stringify(queens, null, 2));
 
   console.log("🎉 Extraction complete!");
-  console.log(`   Saved to: rpdr_contestants.json`);
+  console.log(`   Saved to: rpdr_queens.json`);
 }
 
 main().catch(console.error);
