@@ -47,9 +47,11 @@ async function extractContestantDetails(
       const caption = captionEl.text().trim() || imgEl.attr("alt") || "";
 
       if (imgUrl && caption && imgUrl.includes("static.wikia.nocookie.net")) {
+        const fullSizeImg = imgUrl.split("/revision/")?.[0] || imgUrl;
+
         allLooks.push({
           caption: caption.replace(/&quot;/g, '"').replace(/&#39;/g, "'"),
-          image_url: imgUrl,
+          image_url: fullSizeImg,
           show: showName,
           season: seasonNum ?? -1,
         });
