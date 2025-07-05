@@ -1,7 +1,7 @@
 import type { Queen, Season } from "../types";
 import _ from "lodash";
-import { processQueens } from "./scrapeQueens";
-import { processShows } from "./scrapeShows";
+import { processQueens } from "../scrape/scrapeQueens";
+import { processShows } from "../scrape/scrapeShows";
 
 class ScrapeQueensCommand {
   private shows: string[];

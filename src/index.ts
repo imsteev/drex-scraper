@@ -1,4 +1,4 @@
-import ScrapeQueensCommand from "./scrape/command";
+import ScrapeQueensCommand from "./commands/scrape-queens-command";
 
 const BASE_FANDOM_URL = "https://rupaulsdragrace.fandom.com";
 const SHOWS_TO_PROCESS = ["RuPaul's Drag Race"];
