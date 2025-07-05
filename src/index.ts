@@ -1,6 +1,6 @@
 import _ from "lodash";
 import type { Queen, Season } from "./types";
-import { processShows } from "./scrape/scrapeShow";
+import { processShows } from "./scrape/scrapeShows";
 import { processQueens } from "./scrape/scrapeQueens";
 
 const BASE_FANDOM_URL = "https://rupaulsdragrace.fandom.com";
