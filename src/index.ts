@@ -1,28 +1,37 @@
 import _ from "lodash";
-import type { Queen } from "./types";
-import { processSeason } from "./scrape/scrapeSeasons";
+import type { Queen, Season } from "./types";
+import { processShow } from "./scrape/scrapeShow";
 import { processQueens } from "./scrape/scrapeQueens";
 
 const BASE_FANDOM_URL = "https://rupaulsdragrace.fandom.com";
-const SHOW_NAME = "RuPaul's Drag Race";
-const SEASONS_TO_PROCESS = 17; // as of 2025-07-04
 
 async function main() {
-  const seasons = await Promise.all(
-    _.times(SEASONS_TO_PROCESS, (i) =>
-      processSeason(BASE_FANDOM_URL, SHOW_NAME, i + 1)
-    )
-  );
+  const SHOWS_TO_PROCESS = [
+    {
+      name: "RuPaul's Drag Race",
+      numSeasons: 17,
+    },
+  ];
+
+  const seasons: Season[] = [];
+  for (const show of SHOWS_TO_PROCESS) {
+    const showSeasons = await processShow(BASE_FANDOM_URL, show);
+    seasons.push(...showSeasons);
+  }
+
   const uniqueQueens = _.uniqBy(
     seasons.flatMap((s) => s.contestants),
     "name"
   );
 
+  console.log(`\nProcessing ${uniqueQueens.length} queens...\n`);
   const queens: Queen[] = [];
-  for (const batch of _.chunk(uniqueQueens, 50)) {
-    const batchResults = await processQueens(batch);
-    queens.push(...batchResults);
-  }
+  await Promise.all(
+    _.chunk(uniqueQueens, 50).map(async (batch) => {
+      const batchResults = await processQueens(batch);
+      queens.push(...batchResults);
+    })
+  );
 
   queens.sort((a, b) => a.name.localeCompare(b.name));
 

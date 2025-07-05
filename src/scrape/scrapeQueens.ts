@@ -52,7 +52,7 @@ async function extractQueenDetails(
         allLooks.push({
           caption: caption.replace(/&quot;/g, '"').replace(/&#39;/g, "'"),
           image_url: fullSizeImg,
-          series: {
+          season: {
             show: showName,
             season: seasonNum ?? -1,
           },

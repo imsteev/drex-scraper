@@ -1,4 +1,4 @@
-export interface Series {
+export interface Season {
   show: string;
   season: number;
   year: number;
@@ -21,5 +21,5 @@ export interface Queen {
 export interface Look {
   caption: string;
   image_url: string;
-  series: Pick<Series, "show" | "season">;
+  season: Pick<Season, "show" | "season">;
 }
