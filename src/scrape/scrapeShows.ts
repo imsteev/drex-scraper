@@ -7,11 +7,11 @@ export async function processShows(
   baseUrl: string,
   shows: { name: string; numSeasons: number }[]
 ): Promise<Season[]> {
-  const seasons: Season[] = [];
-  for (const show of shows) {
-    const showSeasons = await processShow(baseUrl, show);
-    seasons.push(...showSeasons);
-  }
+  const seasons = _.flatten(
+    await Promise.all(
+      shows.map(async (show) => processSeasonsForShow(baseUrl, show))
+    )
+  );
   seasons.forEach((s) => {
     console.log(
       `${s.show} Season ${s.season}: ${s.contestants.length} contestants found`
@@ -20,7 +20,7 @@ export async function processShows(
   return seasons;
 }
 
-async function processShow(
+async function processSeasonsForShow(
   baseUrl: string,
   show: {
     name: string;
