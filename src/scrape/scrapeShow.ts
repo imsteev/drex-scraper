@@ -36,10 +36,6 @@ export async function processShow(
       })
     );
 
-    console.log(
-      `${show.name} Season ${i}: ${finalContestantsData.length} contestants found`
-    );
-
     return {
       show: show.name,
       season: i,

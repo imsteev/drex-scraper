@@ -13,18 +13,32 @@ async function main() {
     },
   ];
 
+  console.log(`# of shows to process: ${SHOWS_TO_PROCESS.length}`);
+  console.log(
+    `# of seasons to process: ${_.sumBy(SHOWS_TO_PROCESS, "numSeasons")}\n`
+  );
+
   const seasons: Season[] = [];
-  for (const show of SHOWS_TO_PROCESS) {
-    const showSeasons = await processShow(BASE_FANDOM_URL, show);
-    seasons.push(...showSeasons);
-  }
+  await Promise.all(
+    _.chunk(SHOWS_TO_PROCESS, 5).map(async (batch) => {
+      for (const show of batch) {
+        const showSeasons = await processShow(BASE_FANDOM_URL, show);
+        showSeasons.forEach((s) => {
+          console.log(
+            `${show.name} Season ${s.season}: ${s.contestants.length} contestants found`
+          );
+        });
+        seasons.push(...showSeasons);
+      }
+    })
+  );
 
   const uniqueQueens = _.uniqBy(
     seasons.flatMap((s) => s.contestants),
     "name"
   );
 
-  console.log(`\nProcessing ${uniqueQueens.length} queens...\n`);
+  console.log(`\n# of queens to process: ${uniqueQueens.length}\n`);
   const queens: Queen[] = [];
   await Promise.all(
     _.chunk(uniqueQueens, 50).map(async (batch) => {
