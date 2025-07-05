@@ -5,11 +5,22 @@ import _ from "lodash";
 
 export async function processShows(
   baseUrl: string,
-  shows: { name: string; numSeasons: number }[]
+  shows: string[]
 ): Promise<Season[]> {
+  const showSummaries = await Promise.all(
+    shows.map(async (show) => getShowSummary(baseUrl, show))
+  );
+
+  const showsWithSummaries = _.zip(shows, showSummaries);
+
   const seasons = _.flatten(
     await Promise.all(
-      shows.map(async (show) => processSeasonsForShow(baseUrl, show))
+      showsWithSummaries.map(async ([show, summary]) =>
+        processSeasonsForShow(baseUrl, {
+          name: show!,
+          numSeasons: summary!.latestSeason,
+        })
+      )
     )
   );
   seasons.forEach((s) => {
@@ -18,6 +29,30 @@ export async function processShows(
     );
   });
   return seasons;
+}
+
+async function getShowSummary(
+  baseUrl: string,
+  show: string
+): Promise<{
+  name: string;
+  latestSeason: number;
+}> {
+  const showUrl = `${baseUrl}/wiki/${show.replaceAll(" ", "_")}`;
+  const response = await fetchWithRetry(showUrl);
+  const $ = cheerio.load(await response.text());
+  let latestSeason = 0;
+  $("small").each((_, el) => {
+    const text = $(el).text();
+    const match = text.match(/(s\d+)/i); // (s1), (s2), etc.
+    if (match?.[1]) {
+      latestSeason = Math.max(latestSeason, parseInt(match[1].slice(1), 10));
+    }
+  });
+  return {
+    name: show,
+    latestSeason,
+  };
 }
 
 async function processSeasonsForShow(

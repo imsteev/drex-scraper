@@ -5,19 +5,11 @@ import { processQueens } from "./scrape/scrapeQueens";
 
 const BASE_FANDOM_URL = "https://rupaulsdragrace.fandom.com";
 
-const SHOWS_TO_PROCESS = [
-  {
-    name: "RuPaul's Drag Race",
-    numSeasons: 17,
-  },
-];
+const SHOWS_TO_PROCESS = ["RuPaul's Drag Race"];
 
 async function main() {
-  console.log(`# of shows to process: ${SHOWS_TO_PROCESS.length}`);
+  console.log(`# of shows to process: ${SHOWS_TO_PROCESS.length}\n`);
 
-  const totalSeasons = _.sumBy(SHOWS_TO_PROCESS, "numSeasons");
-
-  console.log(`# of seasons to process: ${totalSeasons}\n`);
   const seasons: Season[] = [];
   await Promise.all(
     _.chunk(SHOWS_TO_PROCESS, 5).map(async (shows) => {
