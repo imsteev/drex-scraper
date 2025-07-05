@@ -52,8 +52,10 @@ async function extractContestantDetails(
         allLooks.push({
           caption: caption.replace(/&quot;/g, '"').replace(/&#39;/g, "'"),
           image_url: fullSizeImg,
-          show: showName,
-          season: seasonNum ?? -1,
+          series: {
+            show: showName,
+            season: seasonNum ?? -1,
+          },
         });
       }
     });
