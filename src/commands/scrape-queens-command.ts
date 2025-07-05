@@ -3,19 +3,17 @@ import _ from "lodash";
 import { processQueens } from "../scrape/scrapeQueens";
 import { processShows } from "../scrape/scrapeShows";
 
-class ScrapeQueensCommand {
-  private shows: string[];
+const BASE_FANDOM_URL = "https://rupaulsdragrace.fandom.com";
 
-  constructor(private readonly baseUrl: string, shows: string[]) {
-    this.shows = shows;
-  }
+class ScrapeQueensCommand {
+  constructor(private readonly args: { shows: string[] }) {}
 
   async execute() {
-    console.log(`# of shows to process: ${this.shows.length}\n`);
+    console.log(`# of shows to process: ${this.args.shows.length}\n`);
     const seasons: Season[] = [];
     await Promise.all(
-      _.chunk(this.shows, 5).map(async (shows) => {
-        const batchResults = await processShows(this.baseUrl, shows);
+      _.chunk(this.args.shows, 5).map(async (shows) => {
+        const batchResults = await processShows(BASE_FANDOM_URL, shows);
         seasons.push(...batchResults);
       })
     );

@@ -1,13 +1,9 @@
 import ScrapeQueensCommand from "./commands/scrape-queens-command";
 
-const BASE_FANDOM_URL = "https://rupaulsdragrace.fandom.com";
-const SHOWS_TO_PROCESS = ["RuPaul's Drag Race"];
-
 async function main() {
-  const queens = await new ScrapeQueensCommand(
-    BASE_FANDOM_URL,
-    SHOWS_TO_PROCESS
-  ).execute();
+  const queens = await new ScrapeQueensCommand({
+    shows: ["RuPaul's Drag Race"],
+  }).execute();
 
   await Bun.write("rpdr_queens.json", JSON.stringify(queens, null, 2));
 
