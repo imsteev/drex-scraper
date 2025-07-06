@@ -9,7 +9,6 @@ class ScrapeQueensCommand {
   constructor(private readonly args: { shows: string[] }) {}
 
   async execute() {
-    console.log(`# of shows to process: ${this.args.shows.length}\n`);
     const seasons: Season[] = [];
     await Promise.all(
       _.chunk(this.args.shows, 5).map(async (shows) => {
@@ -23,7 +22,6 @@ class ScrapeQueensCommand {
       "name"
     );
 
-    console.log(`\n# of queens to process: ${uniqueQueens.length}\n`);
     const queens: Queen[] = [];
     await Promise.all(
       _.chunk(uniqueQueens, 50).map(async (qs) => {

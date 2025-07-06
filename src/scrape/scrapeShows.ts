@@ -13,7 +13,7 @@ export async function processShows(
 
   const showsWithSummaries = _.zip(shows, showSummaries);
 
-  const seasons = _.flatten(
+  return _.flatten(
     await Promise.all(
       showsWithSummaries.map(async ([show, summary]) =>
         processSeasonsForShow(baseUrl, {
@@ -23,12 +23,6 @@ export async function processShows(
       )
     )
   );
-  seasons.forEach((s) => {
-    console.log(
-      `${s.show} Season ${s.season}: ${s.contestants.length} contestants found`
-    );
-  });
-  return seasons;
 }
 
 async function getShowSummary(

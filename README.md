@@ -1,5 +1,5 @@
 # drex-scraper
 
 ```
-bun scrape
+bun scrape > queens.json
 ```
