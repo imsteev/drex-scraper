@@ -20,6 +20,6 @@ export interface Queen {
 
 export interface Look {
   caption: string;
-  image_url: string;
+  imageUrl: string;
   season: Pick<Season, "show" | "season">;
 }
